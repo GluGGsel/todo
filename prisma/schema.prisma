@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Person {
+  MANN
+  FRAU
+}
+
+enum Assignee {
+  MANN
+  FRAU
+  BEIDE
+}
+
+enum Priority {
+  A
+  B
+  C
+}
+
+model Todo {
+  id        String    @id @default(cuid())
+  title     String
+  done      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  author    Person
+  assignee  Assignee
+
+  deadline  DateTime?
+  priority  Priority
+
+  tags      TodoTag[]
+}
+
+model Tag {
+  id    String   @id @default(cuid())
+  name  String   @unique
+  todos TodoTag[]
+}
+
+model TodoTag {
+  todoId String
+  tagId  String
+
+  todo Todo @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([todoId, tagId])
+}
