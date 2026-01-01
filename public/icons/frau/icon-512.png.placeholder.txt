@@ -1,6 +1,6 @@
 Placeholder file.
 
 Replace this file in the PRIVATE repository with:
-public/icons/frau/apple-touch-icon.png
+public/icons/frau/icon-512.png
 
 Do NOT add real icons to the public repository.

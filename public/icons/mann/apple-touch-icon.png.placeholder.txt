@@ -1,1 +1,6 @@
-d
+Placeholder file.
+
+Replace this file in the PRIVATE repository with:
+public/icons/mann/apple-touch-icon.png
+
+Do NOT add real icons to the public repository.
