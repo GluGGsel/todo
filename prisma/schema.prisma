@@ -7,24 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Person { MANN FRAU }
-enum Assignee { MANN FRAU BEIDE }
-enum Priority { A B C }
-enum ActivityType { ADDED COMPLETED REOPENED EDITED PINNED UNPINNED }
+enum Person {
+  MANN
+  FRAU
+}
+
+enum Assignee {
+  MANN
+  FRAU
+  BEIDE
+}
+
+enum Priority {
+  A
+  B
+  C
+}
+
+enum ActivityType {
+  ADDED
+  COMPLETED
+  REOPENED
+  EDITED
+  PINNED
+  UNPINNED
+}
 
 model Todo {
-  id          String    @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
-  done        Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  done        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   author      Person
   assignee    Assignee
   deadline    DateTime?
   priority    Priority
 
-  pinned      Boolean   @default(false)
+  pinned      Boolean  @default(false)
 
   completedAt DateTime?
   completedBy Person?
