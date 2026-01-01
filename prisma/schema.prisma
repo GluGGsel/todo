@@ -7,36 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Person {
-  MANN
-  FRAU
-}
-
-enum Assignee {
-  MANN
-  FRAU
-  BEIDE
-}
-
-enum Priority {
-  A
-  B
-  C
-}
+enum Person { MANN FRAU }
+enum Assignee { MANN FRAU BEIDE }
+enum Priority { A B C }
+enum ActivityType { ADDED COMPLETED REOPENED }
 
 model Todo {
-  id        String    @id @default(cuid())
-  title     String
-  done      Boolean   @default(false)
-  createdAt DateTime  @default(now())
+  id          String    @id @default(cuid())
+  title       String
+  done        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  author      Person
+  assignee    Assignee
+  deadline    DateTime?
+  priority    Priority
 
-  author    Person
-  assignee  Assignee
+  completedAt DateTime?
+  completedBy Person?
 
-  deadline  DateTime?
-  priority  Priority
-
-  tags      TodoTag[]
+  tags        TodoTag[]
+  activities  Activity[]
 }
 
 model Tag {
@@ -48,9 +38,17 @@ model Tag {
 model TodoTag {
   todoId String
   tagId  String
-
   todo Todo @relation(fields: [todoId], references: [id], onDelete: Cascade)
   tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
   @@id([todoId, tagId])
+}
+
+model Activity {
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now())
+  type      ActivityType
+  actor     Person
+  todoId    String?
+  todo      Todo?        @relation(fields: [todoId], references: [id], onDelete: SetNull)
+  title     String
 }
