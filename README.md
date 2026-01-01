@@ -6,156 +6,123 @@ Was macht die App?
 Diese App ist eine selbstgehostete, minimalistische To-do-Liste für zwei Personen
 (Mann und Frau) mit gemeinsamem Aufgabenpool.
 
-Zugriff erfolgt über zwei feste URLs:
+Der Zugriff erfolgt über zwei feste URLs:
 - /mann
 - /frau
 
 Es gibt keine Benutzerverwaltung und keinen Login.
-Die Zuordnung erfolgt rein über die Oberfläche.
+Die Zuordnung erfolgt ausschließlich über die Oberfläche.
 
 Funktionen:
-- To-dos erstellen, abhaken und anzeigen
-- Autor (Mann/Frau) + Erstellungsdatum wird angezeigt
+- To-dos erstellen, anzeigen und abhaken
+- Anzeige von Autor (Mann/Frau) und Erstellungsdatum
 - Zuweisung pro To-do: Mann / Frau / Beide
-- Filter:
-  - „Meine“ (mir zugewiesen + beide)
-  - „Alle“
-- Tags (7 Stück) mit Kachel-Filter:
-  - Haushalt
-  - Wohnung
-  - Fahrzeuge
-  - Finanzen
-  - Termine
-  - Gesundheit & Familie
-  - IT & Orga
-  + Sonderfilter:
-    - Alle
-    - Untagged
+- Filter: „Meine“ und „Alle“
+- Tags mit Kachel-Filter (7 Stück):
+  Haushalt, Wohnung, Fahrzeuge, Finanzen, Termine,
+  Gesundheit & Familie, IT & Orga
+  + Alle, Untagged
 - Mehrere Tags pro To-do möglich
 - Optionale Deadline
 - Priorität A / B / C (farblich)
-  - A = ≤ 2 Tage
-  - B = ≤ 7 Tage
-  - C = ≤ 30 Tage
-- Empfehlung der Priorität basierend auf gesetzter Deadline
-- Unterschiedliche Farbwelten:
-  - Mann = Blau
-  - Frau = Rosa
-- Dark Mode automatisch über System (`prefers-color-scheme`)
-- iOS-Homescreen-fähig (separate Icons pro Route)
-- Datenhaltung lokal über SQLite (eine Datei)
+- Prioritäts-Empfehlung basierend auf Deadline
+- Unterschiedliche Farbwelten (Mann blau, Frau rosa)
+- Automatischer Dark Mode
+- iOS-Homescreen-fähig
+- Lokale SQLite-Datenbank
 
-Kein Cloud-Dienst, kein Tracking, keine externen Abhängigkeiten.
+Kein Cloud-Dienst, kein Tracking.
 
 
 Systemvoraussetzungen
 ---------------------
-- Linux (getestet mit Ubuntu LTS)
-- Root-Zugriff oder sudo
-- Internetzugang
-- GitHub-Zugriff (public + optional private Repo)
+- Linux (Ubuntu LTS empfohlen)
+- Root oder sudo
+- GitHub-Zugriff
 - Node.js 22 LTS
 - systemd
-
-Empfohlen:
-- Proxmox LXC oder VM
 
 
 Installation (CLI)
 ------------------
 
-1) System vorbereiten
----------------------
+System vorbereiten:
+```bash
 apt update
 apt install git curl build-essential -y
+```
 
-2) Node.js 22 LTS installieren
-------------------------------
+Node.js installieren:
+```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt install nodejs -y
 node -v
 npm -v
+```
 
-3) App klonen
--------------
+App klonen:
+```bash
 mkdir -p /opt/todo
 cd /opt/todo
 git clone https://github.com/<USERNAME>/todo.git .
+```
 
-(Optional: private Downstream-Repo verwenden)
-git remote add upstream https://github.com/<USERNAME>/todo.git
-
-4) Environment vorbereiten
---------------------------
+Environment:
+```bash
 cp .env.example .env
 mkdir -p data
+```
 
-Inhalt .env (Beispiel):
+.env Beispiel:
+```text
 DATABASE_URL="file:./data/app.db"
+```
 
-5) Abhängigkeiten installieren
--------------------------------
+Dependencies:
+```bash
 npm ci
+```
 
-6) Prisma initialisieren
-------------------------
+Prisma:
+```bash
 npx prisma generate
-
-Falls noch keine Migration existiert:
 npx prisma migrate dev --name init
-
-Danach:
 npm run seed
+```
 
-7) App testen (Development)
----------------------------
+Start (dev):
+```bash
 npm run dev
+```
 
-Aufrufen:
-- http://<SERVER-IP>:3000/mann
-- http://<SERVER-IP>:3000/frau
-
-8) Production Build
--------------------
+Build + Service:
+```bash
 npm run build
-
-9) systemd Service installieren
--------------------------------
 cp scripts/todo-app.service /etc/systemd/system/todo-app.service
 systemctl daemon-reload
 systemctl enable --now todo-app
-systemctl status todo-app --no-pager
+```
 
-Die App läuft nun dauerhaft auf Port 3000.
-
-
-Updates / Deployment
---------------------
-Standard-Workflow:
-
+Updates:
+```bash
 cd /opt/todo
 git fetch upstream
 git merge upstream/main
 git push
 sudo bash scripts/deploy.sh
+```
 
+Icons:
+Echte Icons gehören nur ins private Repo:
+```text
+public/icons/mann/*.png
+public/icons/frau/*.png
+```
 
-Icons (wichtig)
----------------
-Im Public Repository befinden sich nur Platzhalter für Icons.
-Echte Icons gehören ausschließlich ins private Repository.
-
-
-Backup
-------
-Alle Daten liegen in:
- /opt/todo/data/app.db
-
-Empfohlenes Backup:
+Backup:
+```bash
 cp /opt/todo/data/app.db /backup/todo_$(date +%F).db
+```
 
-
-Lizenz / Nutzung
-----------------
-Private Nutzung, Self-Hosting.
-Keine Gewährleistung.
+Lizenz:
+Private Nutzung, keine Gewährleistung.
