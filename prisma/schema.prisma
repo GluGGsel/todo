@@ -10,17 +10,21 @@ datasource db {
 enum Person { MANN FRAU }
 enum Assignee { MANN FRAU BEIDE }
 enum Priority { A B C }
-enum ActivityType { ADDED COMPLETED REOPENED }
+enum ActivityType { ADDED COMPLETED REOPENED EDITED PINNED UNPINNED }
 
 model Todo {
   id          String    @id @default(cuid())
   title       String
   done        Boolean   @default(false)
   createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
   author      Person
   assignee    Assignee
   deadline    DateTime?
   priority    Priority
+
+  pinned      Boolean   @default(false)
 
   completedAt DateTime?
   completedBy Person?
@@ -38,8 +42,10 @@ model Tag {
 model TodoTag {
   todoId String
   tagId  String
+
   todo Todo @relation(fields: [todoId], references: [id], onDelete: Cascade)
   tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
   @@id([todoId, tagId])
 }
 
@@ -51,4 +57,15 @@ model Activity {
   todoId    String?
   todo      Todo?        @relation(fields: [todoId], references: [id], onDelete: SetNull)
   title     String
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  person    Person
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
 }
