@@ -8,6 +8,25 @@ export function formatDate(d: Date) {
   return d.toLocaleDateString("de-CH", { year: "numeric", month: "2-digit", day: "2-digit" });
 }
 
+export function formatDateTime(d: Date) {
+  return d.toLocaleString("de-CH", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+export function isToday(d: Date) {
+  const now = new Date();
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  );
+}
+
 export function daysUntil(deadlineIso: string) {
   const now = new Date();
   const d = new Date(deadlineIso);
