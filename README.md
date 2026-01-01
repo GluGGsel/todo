@@ -1,70 +1,54 @@
-TODO APP (SELF-HOSTED)
-=====================
+TODO APP
 
-Was macht die App?
------------------
-Eine selbstgehostete To-do-App für zwei Personen (Mann / Frau) mit gemeinsamem Aufgabenpool.
+Was ist das?
+-----------
+Selbstgehostete To-do-App für zwei Personen (Mann / Frau) mit gemeinsamer Aufgabenverwaltung.
+Optimiert für Nutzung als PWA auf iOS (Homescreen).
 
-- Zugriff über feste URLs: /mann und /frau
-- Keine Benutzerkonten, kein Login
-- To-dos erstellen und abhaken
-- Autor + Datum sichtbar
-- Zuweisung: Mann / Frau / Beide
-- Filter: Meine / Alle
-- Tags (7 Kategorien) + Untagged
-- Optionale Deadline mit Prioritäts-Empfehlung (A/B/C)
-- Unterschiedliche Farbwelten (Mann blau, Frau rosa)
-- Automatischer Dark Mode
-- Lokale SQLite-Datenbank
-- iOS-Homescreen-fähig
-
-Kein Cloud-Zwang, kein Tracking.
-
+Funktionen:
+- Separate URLs: /mann und /frau
+- Aufgaben mit Tags, Priorität und Deadline
+- Überfällige Aufgaben: Hervorhebung + Zähler
+- Aufgaben bearbeiten (Edit)
+- Aufgaben anpinnen (Pinned)
+- Erledigt-Liste (letzte 20, einklappbar)
+- Undo nach Abhaken
+- Aktivitäts-Ticker (wer hat was getan)
+- Optionale Push-Benachrichtigungen
+- Leere Zustände statt leerer Seiten
+- Dark Mode (Systemstandard)
 
 Installation (CLI)
 ------------------
-
-System vorbereiten:
-```bash
 apt update
-apt install git curl build-essential -y
-```
+apt install -y git
+cd /opt
+git clone https://github.com/Gluggsel/todo.git
+cd todo
+chmod +x scripts/installer.sh
+bash scripts/installer.sh
 
-Node.js 22 LTS installieren:
-```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-apt install nodejs -y
-```
+App aufrufen:
+http://SERVER-IP:3000/mann
+http://SERVER-IP:3000/frau
 
-App klonen:
-```bash
-mkdir -p /opt/todo
-cd /opt/todo
-git clone https://github.com/<USERNAME>/todo.git .
-```
+Push Notifications (optional)
+----------------------------
+npx web-push generate-vapid-keys
 
-Environment vorbereiten:
-```bash
-cp .env.example .env
-mkdir -p data
-```
+In .env eintragen:
+VAPID_PUBLIC_KEY="..."
+VAPID_PRIVATE_KEY="..."
+VAPID_SUBJECT="mailto:admin@example.com"
 
-Dependencies + Build:
-```bash
-npm ci
-npx prisma generate
-npx prisma migrate dev --name init
-npm run seed
-npm run build
-```
+Danach neu deployen:
+sudo bash scripts/deploy.sh
 
-Service starten:
-```bash
-cp scripts/todo-app.service /etc/systemd/system/todo-app.service
-systemctl daemon-reload
-systemctl enable --now todo-app
-```
-
-App läuft auf Port 3000:
-- http://<SERVER-IP>:3000/mann
-- http://<SERVER-IP>:3000/frau
+Wichtige Pfade im Repository
+----------------------------
+scripts/installer.sh
+.env.example   (wird bei Installation nach .env kopiert)
+app/           (Next.js App)
+components/    (UI-Komponenten)
+data/app.db    (SQLite Datenbank)
+config/        (nur im privaten Repo, Individualisierung)
